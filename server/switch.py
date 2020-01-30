@@ -8,6 +8,9 @@
 import RPi.GPIO as GPIO
 
 def switchSetup():
+    """
+    设置port1,2,3接口
+    """
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(5, GPIO.OUT)
@@ -15,6 +18,9 @@ def switchSetup():
     GPIO.setup(13, GPIO.OUT)
 
 def switch(port, status):
+    """
+    通过GPIO控制port接口开关
+    """
     if port == 1:
         if status == 1:
             GPIO.output(5, GPIO.HIGH)

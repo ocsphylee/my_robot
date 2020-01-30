@@ -52,6 +52,7 @@ class Servo_ctrl(threading.Thread):
         while self.__running.isSet():
             self.__flag.wait()      # 为True时立即返回, 为False时阻塞直到内部的标识位为True后返回
             if functionMode != 6:
+                # 6：固定云台
                 if servo_command == 'lookleft':
                     servo.lookleft(servo_speed)
                 elif servo_command == 'lookright':
@@ -72,12 +73,16 @@ class Servo_ctrl(threading.Thread):
                     pass
 
             if functionMode == 4:
+                # 启动循迹模块
                 servo.ahead()
+
                 findline.run()
                 if not functionMode:
                     move.motorStop()
             elif functionMode == 5:
+                # 自动模式
                 servo.ahead()
+                # 超声测距
                 dis_get = ultra.checkdist()
                 if dis_get < 0.15:
                     move.motorStop()
@@ -90,7 +95,9 @@ class Servo_ctrl(threading.Thread):
                     move.move(100, 'forward', 'no', 1)
                 if not functionMode:
                     move.motorStop()
+
             elif functionMode == 6:
+                # 固定云台
                 if MPU_connection:
                     accelerometer_data = sensor.get_accel_data()
                     Y_get = accelerometer_data['y']
@@ -158,7 +165,7 @@ def FPV_thread():
     fpv.capture_thread(addr[0])
 
 
-def  ap_thread():
+def ap_thread():
     os.system("sudo create_ap wlan0 eth0 Groovy 12345678")
 
 
@@ -173,15 +180,18 @@ def run():
     speed_set = 100
     rad = 0.5
 
+    # 建立线程，发送CPU信息
     info_threading=threading.Thread(target=info_send_client)    #Define a thread for FPV and OpenCV
     info_threading.setDaemon(True)                             #'True' means it is a front thread,it would close when the mainloop() closes
     info_threading.start()                                     #Thread starts
 
-
+    # 云台控制
     servo_move = Servo_ctrl()
     servo_move.start()
     servo_move.pause()
     findline.setup()
+
+    # 接受客户端信息
     while True: 
         data = ''
         data = str(tcpCliSock.recv(BUFSIZ).decode())
@@ -412,6 +422,10 @@ def run():
 
 
 def wifi_check():
+    """
+    检测wifi连接
+    :return:
+    """
     try:
         s =socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         s.connect(("1.1.1.1",80))
@@ -438,25 +452,32 @@ def wifi_check():
 
 
 if __name__ == '__main__':
+    # TODO: 删除重复代码，功能模块化
+    # 舵机初始化
     servo.servo_init()
+
     switch.switchSetup()
     switch.set_all_switch_off()
 
+    # 设置地址
     HOST = ''
     PORT = 10223                              #Define port serial 
     BUFSIZ = 1024                             #Define buffer size
     ADDR = (HOST, PORT)
 
     try:
+        # 实例化LED对象，并设置颜色
         LED  = LED.LED()
         LED.colorWipe(255,16,0)
     except:
         print('Use "sudo pip3 install rpi_ws281x" to install WS_281x package')
         pass
         
-    while  1:
+    while 1:
         wifi_check()
         try:
+            # 建立网络连接，等待客户端连接。
+            # TODO: 取消重复socket连接
             tcpSerSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             tcpSerSock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
             tcpSerSock.bind(ADDR)
@@ -465,6 +486,7 @@ if __name__ == '__main__':
             tcpCliSock, addr = tcpSerSock.accept()
             print('...connected from :', addr)
 
+            # 建立图像处理的线程
             fpv=FPV.FPV()
             fps_threading=threading.Thread(target=FPV_thread)         #Define a thread for FPV and OpenCV
             fps_threading.setDaemon(True)                             #'True' means it is a front thread,it would close when the mainloop() closes

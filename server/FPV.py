@@ -34,9 +34,9 @@ Y_lock = 0
 X_lock = 0
 tor	= 17
 FindColorMode = 0
-WatchDogMode  = 0
+WatchDogMode = 0
 UltraData = 3
-LED  = LED.LED()
+LED = LED.LED()
 
 CVrun = 1
 FindLineMode = 0
@@ -79,6 +79,9 @@ def findLineCtrl(posInput, setCenter):
 
 
 def cvFindLine():
+	"""
+
+	"""
 	global frame_findline
 	frame_findline = cv2.cvtColor(frame_image, cv2.COLOR_BGR2GRAY)
 	retval, frame_findline =  cv2.threshold(frame_findline, 0, 255, cv2.THRESH_OTSU)
@@ -178,6 +181,7 @@ class FPV:
 
 	def capture_thread(self,IPinver):
 		global frame_image
+
 		ap = argparse.ArgumentParser()			#OpenCV initialization
 		ap.add_argument("-b", "--buffer", type=int, default=64,
 			help="max buffer size")
@@ -186,11 +190,14 @@ class FPV:
 
 		font = cv2.FONT_HERSHEY_SIMPLEX
 
+		# 获取树莓派摄像头图像
 		camera = picamera.PiCamera() 
 		camera.resolution = (640, 480)
 		camera.framerate = 20
 		rawCapture = PiRGBArray(camera, size=(640, 480))
 
+		# 建立zmq连接
+		# TODO: 改成服务端
 		context = zmq.Context()
 		footage_socket = context.socket(zmq.PUB)
 		print(IPinver)
@@ -206,9 +213,11 @@ class FPV:
 			timestamp = datetime.datetime.now()
 
 			if FindLineMode:
+				# 启动图像循迹
 				cvFindLine()
 
 			if FindColorMode:
+				# 启动颜色追踪
 				####>>>OpenCV Start<<<####
 				hsv = cv2.cvtColor(frame_image, cv2.COLOR_BGR2HSV)
 				mask = cv2.inRange(hsv, self.colorLower, self.colorUpper)
@@ -289,6 +298,7 @@ class FPV:
 				
 
 			if WatchDogMode:
+				# 动作捕获
 				gray = cv2.cvtColor(frame_image, cv2.COLOR_BGR2GRAY)
 				gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
@@ -352,6 +362,6 @@ class FPV:
 if __name__ == '__main__':
 	fpv=FPV()
 	while 1:
-		fpv.capture_thread('192.168.0.110')
+		fpv.capture_thread('192.168.0.109')
 		pass
 

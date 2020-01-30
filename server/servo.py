@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # File name   : servo.py
-# Description : Control Servos
+# Description : 舵机控制
 # Author      : William
 # Date        : 2019/02/23
 from __future__ import division
@@ -18,10 +18,11 @@ pwm1_direction = 1
 pwm2_direction = 1
 pwm3_direction = 1
 
-
+# 实例化PWM对象
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(50)
 
+# 设置默认值
 pwm0_init = 300
 pwm0_max  = 450
 pwm0_min  = 150
@@ -215,6 +216,9 @@ def loose(speed):
 
 
 def servo_init():
+	"""
+	设置初始位置
+	"""
 	pwm.set_pwm(0, 0, pwm0_pos)
 	pwm.set_pwm(1, 0, pwm1_pos)
 	pwm.set_pwm(2, 0, pwm2_max)

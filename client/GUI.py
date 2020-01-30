@@ -57,7 +57,7 @@ global_init()
 
 def video_thread():
 	global footage_socket, font, frame_num, fps
-	# 建立消息队列（zmq发布订阅模型，用户端）
+	# 建立消息队列（zmq发布订阅模型，服务端）
 	context = zmq.Context()
 	footage_socket = context.socket(zmq.SUB)
 	footage_socket.bind('tcp://*:5555')
@@ -121,6 +121,7 @@ def opencv_r():
 			break
 
 # 建立fps和video线程
+# TODO: 删掉
 fps_threading=thread.Thread(target=get_FPS)		 #Define a thread for FPV and OpenCV
 fps_threading.setDaemon(True)							 #'True' means it is a front thread,it would close when the mainloop() closes
 fps_threading.start()									 #Thread starts
