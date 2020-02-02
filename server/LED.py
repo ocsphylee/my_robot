@@ -20,7 +20,7 @@ LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 class LED:
     def __init__(self):
-        self.LED_COUNT      = 16      # Number of LED pixels. TODO: 3 LED pixels?
+        self.LED_COUNT      = 3      # Number of LED pixels. TODO: 3 LED pixels?
         self.LED_PIN        = 12      # GPIO pin connected to the pixels (18 uses PWM!).
         self.LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
         self.LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
@@ -46,6 +46,8 @@ class LED:
             self.strip.setPixelColor(i, color)
             self.strip.show()
 
+
 if __name__ == '__main__':
     led = LED()
     led.colorWipe(0,0,255)
+    color = Color(25,25,25)

@@ -23,6 +23,7 @@ pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(50)
 
 # 设置默认值
+# pwm0: 底部舵机，左右方向
 pwm0_init = 300
 pwm0_max  = 450
 pwm0_min  = 150

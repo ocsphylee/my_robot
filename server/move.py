@@ -11,13 +11,15 @@ import RPi.GPIO as GPIO
 # motor_EN_A: Pin7  |  motor_EN_B: Pin11
 # motor_A:  Pin8,Pin10    |  motor_B: Pin13,Pin12
 
+# pwm 接口用于调整速度
 Motor_A_EN    = 4
 Motor_B_EN    = 17
 
-Motor_A_Pin1  = 26
-Motor_A_Pin2  = 21
-Motor_B_Pin1  = 27
-Motor_B_Pin2  = 18
+# 调整方向的接口
+Motor_A_Pin1  = 26 # HIGH: 顺时针转, LOW: 逆时针转
+Motor_A_Pin2  = 21 # LOW:  顺时针转, HIGH: 逆时针转
+Motor_B_Pin1  = 27 # HIGH: 顺时针转, LOW: 逆时针转
+Motor_B_Pin2  = 18 # LOW:  顺时针转, HIGH: 逆时针转
 
 Dir_forward   = 1
 Dir_backward  = 0
@@ -140,10 +142,10 @@ def destroy():
 
 if __name__ == '__main__':
 	try:
-		speed_set = 60
+		speed_set = 100
 		setup()
-		move(speed_set, 'forward', 'no', 0.8)
-		time.sleep(1.3)
+		move(speed_set, 'backward', 'right', 0.9)
+		time.sleep(30)
 		motorStop()
 		destroy()
 	except KeyboardInterrupt:

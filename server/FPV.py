@@ -196,8 +196,8 @@ class FPV:
 		camera.framerate = 20
 		rawCapture = PiRGBArray(camera, size=(640, 480))
 
-		# 建立zmq连接
-		# TODO: 改成服务端
+		# 建立zmq连接, 客户端
+
 		context = zmq.Context()
 		footage_socket = context.socket(zmq.PUB)
 		print(IPinver)
@@ -250,7 +250,7 @@ class FPV:
 					else:
 						Y_lock = 1
 
-					
+
 					if X < (320-tor*3):
 						error = (320-X)/5
 						outv = int(round((pid.GenOut(error)),0))
@@ -283,7 +283,7 @@ class FPV:
 						#	 print(UltraData)
 						# else:
 						#	 move.motorStop()
-					
+
 
 				else:
 					cv2.putText(frame_image,'Target Detecting',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
@@ -295,7 +295,7 @@ class FPV:
 					thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
 					cv2.line(frame_image, pts[i - 1], pts[i], (0, 0, 255), thickness)
 				####>>>OpenCV Ends<<<####
-				
+
 
 			if WatchDogMode:
 				# 动作捕获
@@ -325,7 +325,7 @@ class FPV:
 					# if the contour is too small, ignore it
 					if cv2.contourArea(c) < 5000:
 						continue
-			 
+
 					# compute the bounding box for the contour, draw it on the frame,
 					# and update the text
 					(x, y, w, h) = cv2.boundingRect(c)

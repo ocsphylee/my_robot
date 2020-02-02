@@ -1,16 +1,18 @@
-#!/usr/bin/python3
-# File name   : findline.py
-# Description : line tracking 
-# Website     : www.gewbot.com
-# Author      : William
-# Date        : 2019/08/28
+# coding = utf-8
+# /usr/bin/env/ python
+
+'''
+Author:Ocsphy
+Date:2020/1/31 23:09
+'''
+
 import RPi.GPIO as GPIO
 import time
-import move
 
 line_pin_right = 19
 line_pin_middle = 16
 line_pin_left = 20
+
 
 def setup():
     GPIO.setwarnings(False)
@@ -19,27 +21,22 @@ def setup():
     GPIO.setup(line_pin_middle,GPIO.IN)
     GPIO.setup(line_pin_left,GPIO.IN)
 
-
-def run():
+def loop():
     status_right = GPIO.input(line_pin_right)
     status_middle = GPIO.input(line_pin_middle)
     status_left = GPIO.input(line_pin_left)
 
     if status_middle == 1:
-        move.move(100, 'forward', 'no', 1)
+        print('middle sensor detected blackline')
     elif status_left == 1:
-        move.move(100, 'forward', 'right', 0.6)
+        print('left sensor detected blackline')
     elif status_right == 1:
-        move.move(100, 'forward', 'left', 0.6)
+        print('right sensor detected blackline')
     else:
-        move.move(100, 'backward', 'no', 1)
+        print('no sensor detected blackline')
 
 if __name__ == '__main__':
-    try:
-        setup()
-        move.setup()
-        while 1:
-            run()
-        pass
-    except KeyboardInterrupt:
-        move.destroy()
+    setup()
+    while 1:
+        loop()
+        time.sleep(0.5)

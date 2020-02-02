@@ -23,13 +23,16 @@ def checkdist():       #Reading distance
     GPIO.output(Tr, GPIO.HIGH)
     time.sleep(0.000015)
     GPIO.output(Tr, GPIO.LOW)
-    while not GPIO.input(Ec):
+
+    while not GPIO.input(Ec):  # 等待接收
         pass
+    # 接到第一个信号，计时
     t1 = time.time()
-    while GPIO.input(Ec):
+    while GPIO.input(Ec):  # 等待接完
         pass
+    # 接完信号，计时
     t2 = time.time()
-    return round((t2-t1)*340/2,2)
+    return round((t2-t1)*340/2,8)
     #return (t2-t1)*340/2
 
 # def checkdist():       #Reading distance
@@ -51,3 +54,4 @@ if __name__ == '__main__':
     while 1:
         print(checkdist())
         time.sleep(1)
+        GPIO.cleanup()
