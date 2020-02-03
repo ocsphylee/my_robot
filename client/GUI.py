@@ -735,7 +735,7 @@ def new_number2view(x,y,info):
 
 
 def scale_FL(x,y,w):
-	global Btn_CVFL
+	global Btn_CVFL, function_stu
 	def lip1_send(event):
 		time.sleep(0.03)
 		tcpClicSock.send(('lip1 %s'%var_lip1.get()).encode())
@@ -752,7 +752,10 @@ def scale_FL(x,y,w):
 		tcpClicSock.send(('Render').encode())
 
 	def call_CVFL(event):
-		tcpClicSock.send(('CVFL').encode())
+		if function_stu == 0:
+			tcpClicSock.send(('CVFL_on').encode())
+		else:
+			tcpClicSock.send(('CVFL_off').encode())
 
 	def call_WB(event):
 		tcpClicSock.send(('WBswitch').encode())

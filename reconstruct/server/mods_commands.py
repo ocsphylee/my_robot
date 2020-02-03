@@ -25,6 +25,8 @@ class Commands(Enum):
     LOOKDOWN = 'lookdown'  # 2号舵机，
     GRAB = 'grab'  # 3号舵机，抓取（摇臂）
     LOOSE = 'loose'  # 3号舵机，放开（摇臂）
+    STOP = 'stop'
+    HOME = 'home'
 
     # 电机指令控制
     FORWARD = 'forward'
@@ -34,6 +36,7 @@ class Commands(Enum):
     NO = 'no'
     DS = 'DS'
     TS = 'TS'
+    WSB = 'wsB'
 
     # Port 开关指令
     ON = GPIO.HIGH
@@ -60,6 +63,17 @@ class Commands(Enum):
     FUNCTION_6_ON = 'function_6_on'
     FUNCTION_6_OFF = 'function_6_off'
 
+    CVFL_ON = 'CVFL_on'
+    CVFL_OFF = 'CVFL_off'
+    RENDER = 'Render'
+    WBSWITCH = 'WBswitch'
+    LIP1 = 'lip1'
+    LIP2 = 'lip2'
+    ERR = 'err'
 
 if __name__ == '__main__':
-    print(Commands.LOOSE.value)
+    yuntai_commands = [Commands.LOOKLEFT.value, Commands.LOOKRIGHT.value,
+                       Commands.UP.value, Commands.DOWN.value,
+                       Commands.LOOKUP.value, Commands.LOOKDOWN.value,
+                       Commands.GRAB.value, Commands.LOOSE.value]
+    print('up' in yuntai_commands)

@@ -51,5 +51,13 @@ class AutoMove:
 
 if __name__ == '__main__':
     auto = AutoMove()
-    while 1:
+    t = 0
+    while t< 10:
+        t += 1
+        time.sleep(0.5)
         auto.run()
+        print(t)
+    print('stop')
+    auto.stop()
+    time.sleep(10)
+    print('end')

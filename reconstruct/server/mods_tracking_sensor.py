@@ -35,9 +35,6 @@ class Tracking:
         self.status_middle = GPIO.input(self.middel_pin)
         self.status_left = GPIO.input(self.left_pin)
 
-    def destroy(self):
-        GPIO.cleanup([self.left_pin, self.middel_pin, self.right_pin])
-
 
 if __name__ == '__main__':
     tracking = Tracking()

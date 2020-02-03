@@ -35,7 +35,6 @@ class TrackingMove:
             move.move(Commands.BACKWARD.value, Commands.NO.value, 100, 1)
 
     def stop(self):
-        self.sensor.destroy()
         move.motor_stop()
 
 if __name__ == '__main__':

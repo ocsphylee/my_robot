@@ -104,33 +104,45 @@ class ContinousDetect(threading.Thread):
         self.__flag.set()       # 设置为True
         self.__running = threading.Event()      # 用于停止线程的标识
         self.__running.set()      # 将running设置为True
+        # 实例化功能对象
+        self.tracking = TrackingMove()
+        self.auto = AutoMove()
+        self.yuntai_commands = [Commands.LOOKLEFT.value, Commands.LOOKRIGHT.value,
+                                Commands.UP.value, Commands.DOWN.value,
+                                Commands.LOOKUP.value, Commands.LOOKDOWN.value,
+                                Commands.GRAB.value, Commands.LOOSE.value]
 
     def run(self):
-        # 实例化功能对象
-
-        global current_command
+        global current_command, servo_command
+        servo_command = Commands.STOP.value
         current_command = None
         while self.__running.isSet():
             self.__flag.wait()      # 为True时立即返回, 为False时阻塞直到内部的标识位为True后返回
 
+            if servo_command in self.yuntai_commands:
+                yuntai.servo_turn(servo_command, servo_speed=servo_speed)
+
+            elif servo_command == Commands.STOP.value:
+                pass
+
             # -------红外循迹---------
             if current_command == Commands.FUNCTION_4_ON.value:
-                tracking = TrackingMove()
-                tracking.run()
-
-            elif current_command == Commands.FUNCTION_4_OFF.value:
-                tracking.stop()
+                self.tracking.run()
+                if current_command == Commands.FUNCTION_4_OFF.value:
+                    self.tracking.stop()
 
             # -------自动模式---------
             elif current_command == Commands.FUNCTION_5_ON.value:
-                auto = AutoMove()
-                auto.run()
-
-            elif current_command == Commands.FUNCTION_5_OFF.value:
-                auto.stop()
+                self.auto.run()
+                if current_command == Commands.FUNCTION_5_OFF.value:
+                    self.auto.stop()
 
     def pause(self):
         self.__flag.clear()     # 设置为False, 让线程阻塞
+        # time.sleep(0.5)
+        self.tracking.stop()
+        self.auto.stop()
+
 
     def resume(self):
         self.__flag.set()    # 设置为True, 让线程停止阻塞
@@ -140,7 +152,8 @@ class ContinousDetect(threading.Thread):
         self.__running.clear()        # 设置为False
 
 def execute_commands(bufsiz=1024):
-    global current_command
+    global current_command, servo_command, motor_speed
+    motor_speed = 100
     # motor方向
     direction_command = 'no'
     turn_command = 'no'
@@ -180,6 +193,14 @@ def execute_commands(bufsiz=1024):
             turn_command = Commands.NO.value
             move.move(direction_command, turn_command, motor_speed, motor_radius)
 
+            # ----------------小车速度控制-----------------------
+        elif Commands.WSB.value in data:
+            try:
+                set_b = data.split()
+                motor_speed = int(set_b[1])
+            except:
+                pass
+
         # --------------------开关按钮控制----------------------
 
         elif Commands.SWITCH_1_ON.value in data:
@@ -205,6 +226,17 @@ def execute_commands(bufsiz=1024):
         elif Commands.SWITCH_3_OFF.value in data:
             switch.switch_ctrl(switch.PORT3, Commands.OFF.value)
             tcp_cli_sock.send(Commands.SWITCH_3_OFF.value.encode())
+
+        # --------------------云台控制----------------------
+        elif data in continous_detect.yuntai_commands:
+            servo_command = data
+            continous_detect.resume()
+
+        elif Commands.STOP.value == data:
+            servo_command = Commands.STOP.value
+
+        elif Commands.HOME.value == data:
+            yuntai.ahead()
 
         # --------------------功能按钮----------------------
         #      --------------超声波扫描----------------
@@ -242,7 +274,6 @@ def execute_commands(bufsiz=1024):
 
         elif Commands.FUNCTION_4_OFF.value in data:
             current_command = Commands.FUNCTION_4_OFF.value
-            time.sleep(0.5)
             continous_detect.pause()
             tcp_cli_sock.send(Commands.FUNCTION_4_OFF.value.encode())
 
@@ -254,110 +285,66 @@ def execute_commands(bufsiz=1024):
 
         elif Commands.FUNCTION_5_OFF.value in data:
             current_command = Commands.FUNCTION_5_OFF.value
-            time.sleep(0.5)
             continous_detect.pause()
             tcp_cli_sock.send(Commands.FUNCTION_5_OFF.value.encode())
 
+        # ------------------图像循迹--------------------------------
+        elif Commands.CVFL_ON.value in data:
+            fpv.funcs = FPV_func.CvFindLine()
+            tcp_cli_sock.send(Commands.CVFL_ON.value.encode())
 
-        #
-        #
-        # elif 'lookleft' == data:
-        #     servo_command = 'lookleft'
-        #     servo_move.resume()
-        #
-        # elif 'lookright' == data:
-        #     servo_command = 'lookright'
-        #     servo_move.resume()
-        #
-        # elif 'up' == data:
-        #     servo_command = 'up'
-        #     servo_move.resume()
-        #
-        # elif 'down' == data:
-        #     servo_command = 'down'
-        #     servo_move.resume()
-        #
-        # elif 'lookup' == data:
-        #     servo_command = 'lookup'
-        #     servo_move.resume()
-        #
-        # elif 'lookdown' == data:
-        #     servo_command = 'lookdown'
-        #     servo_move.resume()
-        #
-        # elif 'grab' == data:
-        #     servo_command = 'grab'
-        #     servo_move.resume()
-        #
-        # elif 'loose' == data:
-        #     servo_command = 'loose'
-        #     servo_move.resume()
-        #
-        # elif 'stop' == data:
-        #     if not functionMode:
-        #         servo_move.pause()
-        #     servo_command = 'no'
-        #     pass
-        #
-        # elif 'home' == data:
-        #     servo.ahead()
-        #
-        # elif 'wsB' in data:
-        #     try:
-        #         set_B = data.split()
-        #         speed_set = int(set_B[1])
-        #     except:
-        #         pass
-        #
-        # elif 'CVFL' in data:
-        #     if not FPV.FindLineMode:
-        #         FPV.FindLineMode = 1
-        #         tcpCliSock.send(('CVFL_on').encode())
-        #     else:
-        #         move.motorStop()
-        #         FPV.FindLineMode = 0
-        #         tcpCliSock.send(('CVFL_off').encode())
-        #
-        # elif 'Render' in data:
-        #     if FPV.frameRender:
-        #         FPV.frameRender = 0
-        #     else:
-        #         FPV.frameRender = 1
-        #
-        # elif 'WBswitch' in data:
-        #     if FPV.lineColorSet == 255:
-        #         FPV.lineColorSet = 0
-        #     else:
-        #         FPV.lineColorSet = 255
-        #
-        # elif 'lip1' in data:
-        #     try:
-        #         set_lip1 = data.split()
-        #         lip1_set = int(set_lip1[1])
-        #         FPV.linePos_1 = lip1_set
-        #     except:
-        #         pass
-        #
-        # elif 'lip2' in data:
-        #     try:
-        #         set_lip2 = data.split()
-        #         lip2_set = int(set_lip2[1])
-        #         FPV.linePos_2 = lip2_set
-        #     except:
-        #         pass
-        #
-        # elif 'err' in data:
-        #     try:
-        #         set_err = data.split()
-        #         err_set = int(set_err[1])
-        #         FPV.findLineError = err_set
-        #     except:
-        #         pass
-        #
-        # else:
-        #     pass
-        #
-        # print(data)
+        elif Commands.CVFL_OFF.value in data:
+            fpv.stop()
+            tcp_cli_sock.send(Commands.CVFL_OFF.value.encode())
+
+        #   --------灰度图片---------
+        elif Commands.RENDER.value in data:
+            try:
+                if fpv.funcs.frameRender:
+                    fpv.funcs.frameRender = 0
+                else:
+                    fpv.funcs.frameRender = 1
+            except:
+                pass
+
+        #  ---------切换颜色-------------
+        elif Commands.WBSWITCH.value in data:
+            try:
+                if fpv.funcs.lineColorSet == 255:
+                    fpv.funcs.lineColorSet = 0
+                else:
+                    fpv.funcs.lineColorSet = 255
+            except:
+                pass
+
+        elif Commands.LIP1.value in data:
+            try:
+                set_lip1 = data.split()
+                lip1_set = int(set_lip1[1])
+                fpv.funcs.linePos_1 = lip1_set
+            except:
+                pass
+
+        elif Commands.LIP2.value in data:
+            try:
+                set_lip2 = data.split()
+                lip2_set = int(set_lip2[1])
+                fpv.funcs.linePos_2 = lip2_set
+            except:
+                pass
+
+        elif Commands.ERR.value in data:
+            try:
+                set_err = data.split()
+                err_set = int(set_err[1])
+                fpv.funcs.findLineError = err_set
+            except:
+                pass
+
+        else:
+            pass
+
+        print(data)
 
 
 
@@ -366,15 +353,16 @@ if __name__ == '__main__':
     '''
     ---------------------初始化设置-------------------
     '''
-    # 实例化屏幕对象
+    # 实例化云台对象
     yuntai = YunTai()
     yuntai.servo_init()
+    servo_speed = 1
+    # 实例化屏幕对象
     screen = LCD()
-    # move.setup()
-    motor_speed = 100
     motor_radius = 1
     switch = Switch()
     switch.set_all_switch_off()
+
 
     try:
         # 实例化LED对象，并设置颜色

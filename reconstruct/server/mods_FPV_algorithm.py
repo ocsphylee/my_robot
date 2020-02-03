@@ -98,10 +98,7 @@ UltraData = 3
 
 
 CVrun = 1
-linePos_1 = 440
-linePos_2 = 380
-lineColorSet = 255
-findLineError = 20
+
 
 
 class PicFunction:
@@ -112,6 +109,7 @@ class PicFunction:
     def stop(self):
         pass
 
+
 class CvFindLine(PicFunction):
     """
     图像循迹
@@ -119,11 +117,15 @@ class CvFindLine(PicFunction):
     def __init__(self):
         self.frameRender = 1
         self.speed = 90
+        self.lineColorSet = 255
+        self.linePos_1 = 440
+        self.linePos_2 = 380
+        self.findLineError = 20
 
     def find_line_ctrl(self, pos_input, set_center):
 
         if pos_input:
-            if pos_input > (set_center + findLineError):
+            if pos_input > (set_center + self.findLineError):
                 move.motor_stop()
                 # turnRight
                 error = (pos_input - 320) / 5
@@ -132,7 +134,7 @@ class CvFindLine(PicFunction):
                 time.sleep(0.05)
                 move.motor_stop()
                 pass
-            elif pos_input < (set_center - findLineError):
+            elif pos_input < (set_center - self.findLineError):
                 move.motor_stop()
                 # turnLeft
                 error = (320 - pos_input) / 5
@@ -161,14 +163,14 @@ class CvFindLine(PicFunction):
         frame_findline = cv2.cvtColor(frame_image, cv2.COLOR_BGR2GRAY)
         retval, frame_findline = cv2.threshold(frame_findline, 0, 255, cv2.THRESH_OTSU)
         frame_findline = cv2.erode(frame_findline, None, iterations=6)
-        color_pos_1 = frame_findline[linePos_1]
-        color_pos_2 = frame_findline[linePos_2]
+        color_pos_1 = frame_findline[self.linePos_1]
+        color_pos_2 = frame_findline[self.linePos_2]
         try:
-            line_color_count_pos_1 = np.sum(color_pos_1 == lineColorSet)
-            line_color_count_pos_2 = np.sum(color_pos_2 == lineColorSet)
+            line_color_count_pos_1 = np.sum(color_pos_1 == self.lineColorSet)
+            line_color_count_pos_2 = np.sum(color_pos_2 == self.lineColorSet)
 
-            line_index_pos_1 = np.where(color_pos_1 == lineColorSet)
-            line_index_pos_2 = np.where(color_pos_2 == lineColorSet)
+            line_index_pos_1 = np.where(color_pos_1 == self.lineColorSet)
+            line_index_pos_2 = np.where(color_pos_2 == self.lineColorSet)
 
             if line_color_count_pos_1 == 0:
                 line_color_count_pos_1 = 1
@@ -192,7 +194,7 @@ class CvFindLine(PicFunction):
 
 
         try:
-            if lineColorSet == 255:
+            if self.lineColorSet == 255:
                 cv2.putText(frame_image, 'Following White Line', (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                             (128, 255, 128), 1, cv2.LINE_AA)
                 cv2.putText(frame_findline, 'Following White Line', (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
@@ -204,35 +206,35 @@ class CvFindLine(PicFunction):
                             (128, 255, 128), 1, cv2.LINE_AA)
 
             if self.frameRender:
-                cv2.line(frame_image, (left_pos_1, (linePos_1 + 30)), (left_pos_1, (linePos_1 - 30)), (255, 128, 64), 1)
-                cv2.line(frame_image, (right_pos_1, (linePos_1 + 30)), (right_pos_1, (linePos_1 - 30)), (64, 128, 255), )
-                cv2.line(frame_image, (0, linePos_1), (640, linePos_1), (255, 255, 64), 1)
+                cv2.line(frame_image, (left_pos_1, (self.linePos_1 + 30)), (left_pos_1, (self.linePos_1 - 30)), (255, 128, 64), 1)
+                cv2.line(frame_image, (right_pos_1, (self.linePos_1 + 30)), (right_pos_1, (self.linePos_1 - 30)), (64, 128, 255), )
+                cv2.line(frame_image, (0, self.linePos_1), (640, self.linePos_1), (255, 255, 64), 1)
 
-                cv2.line(frame_image, (left_pos_2, (linePos_2 + 30)), (left_pos_2, (linePos_2 - 30)), (255, 128, 64), 1)
-                cv2.line(frame_image, (right_pos_2, (linePos_2 + 30)), (right_pos_2, (linePos_2 - 30)), (64, 128, 255), 1)
-                cv2.line(frame_image, (0, linePos_2), (640, linePos_2), (255, 255, 64), 1)
+                cv2.line(frame_image, (left_pos_2, (self.linePos_2 + 30)), (left_pos_2, (self.linePos_2 - 30)), (255, 128, 64), 1)
+                cv2.line(frame_image, (right_pos_2, (self.linePos_2 + 30)), (right_pos_2, (self.linePos_2 - 30)), (64, 128, 255), 1)
+                cv2.line(frame_image, (0, self.linePos_2), (640, self.linePos_2), (255, 255, 64), 1)
 
-                cv2.line(frame_image, ((center - 20), int((linePos_1 + linePos_2) / 2)),
-                         ((center + 20), int((linePos_1 + linePos_2) / 2)), (0, 0, 0), 1)
-                cv2.line(frame_image, (center, int((linePos_1 + linePos_2) / 2 + 20)),
-                         (center, int((linePos_1 + linePos_2) / 2 - 20)), (0, 0, 0), 1)
+                cv2.line(frame_image, ((center - 20), int((self.linePos_1 + self.linePos_2) / 2)),
+                         ((center + 20), int((self.linePos_1 + self.linePos_2) / 2)), (0, 0, 0), 1)
+                cv2.line(frame_image, (center, int((self.linePos_1 + self.linePos_2) / 2 + 20)),
+                         (center, int((self.linePos_1 + self.linePos_2) / 2 - 20)), (0, 0, 0), 1)
             else:
-                cv2.line(frame_findline, (left_pos_1, (linePos_1 + 30)), (left_pos_1, (linePos_1 - 30)), (255, 128, 64),
+                cv2.line(frame_findline, (left_pos_1, (self.linePos_1 + 30)), (left_pos_1, (self.linePos_1 - 30)), (255, 128, 64),
                          1)
-                cv2.line(frame_findline, (right_pos_1, (linePos_1 + 30)), (right_pos_1, (linePos_1 - 30)), (64, 128, 255),
+                cv2.line(frame_findline, (right_pos_1, (self.linePos_1 + 30)), (right_pos_1, (self.linePos_1 - 30)), (64, 128, 255),
                          1)
-                cv2.line(frame_findline, (0, linePos_1), (640, linePos_1), (255, 255, 64), 1)
+                cv2.line(frame_findline, (0, self.linePos_1), (640, self.linePos_1), (255, 255, 64), 1)
 
-                cv2.line(frame_findline, (left_pos_2, (linePos_2 + 30)), (left_pos_2, (linePos_2 - 30)), (255, 128, 64),
+                cv2.line(frame_findline, (left_pos_2, (self.linePos_2 + 30)), (left_pos_2, (self.linePos_2 - 30)), (255, 128, 64),
                          1)
-                cv2.line(frame_findline, (right_pos_2, (linePos_2 + 30)), (right_pos_2, (linePos_2 - 30)), (64, 128, 255),
+                cv2.line(frame_findline, (right_pos_2, (self.linePos_2 + 30)), (right_pos_2, (self.linePos_2 - 30)), (64, 128, 255),
                          1)
-                cv2.line(frame_findline, (0, linePos_2), (640, linePos_2), (255, 255, 64), 1)
+                cv2.line(frame_findline, (0, self.linePos_2), (640, self.linePos_2), (255, 255, 64), 1)
 
-                cv2.line(frame_findline, ((center - 20), int((linePos_1 + linePos_2) / 2)),
-                         ((center + 20), int((linePos_1 + linePos_2) / 2)), (0, 0, 0), 1)
-                cv2.line(frame_findline, (center, int((linePos_1 + linePos_2) / 2 + 20)),
-                         (center, int((linePos_1 + linePos_2) / 2 - 20)), (0, 0, 0), 1)
+                cv2.line(frame_findline, ((center - 20), int((self.linePos_1 + self.linePos_2) / 2)),
+                         ((center + 20), int((self.linePos_1 + self.linePos_2) / 2)), (0, 0, 0), 1)
+                cv2.line(frame_findline, (center, int((self.linePos_1 + self.linePos_2) / 2 + 20)),
+                         (center, int((self.linePos_1 + self.linePos_2) / 2 - 20)), (0, 0, 0), 1)
         except:
             pass
 
