@@ -25,7 +25,7 @@ class AutoMove:
         except:
             pass
 
-    def run(self):
+    def run(self, speed):
         # 自动模式
         yuntai = YunTai()
         yuntai.ahead()
@@ -35,15 +35,15 @@ class AutoMove:
 
         if dis_get < 0.15:
             move.motor_stop()
-            move.move(Commands.BACKWARD.value, Commands.NO.value, 100, 1)
+            move.move(Commands.BACKWARD.value, Commands.NO.value, speed, 1)
             time.sleep(0.5)
             move.motor_stop()
-            move.move(Commands.NO.value, Commands.LEFT.value, 100, 1)
+            move.move(Commands.NO.value, Commands.LEFT.value, speed, 1)
             time.sleep(0.2)
             move.motor_stop()
 
         else:
-            move.move(Commands.FORWARD.value, Commands.NO.value, 100, 1)
+            move.move(Commands.FORWARD.value, Commands.NO.value, speed, 1)
 
     def stop(self):
         move.motor_stop()
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     while t< 10:
         t += 1
         time.sleep(0.5)
-        auto.run()
+        auto.run(50)
         print(t)
     print('stop')
     auto.stop()

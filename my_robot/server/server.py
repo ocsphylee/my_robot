@@ -119,7 +119,8 @@ class ContinousDetect(threading.Thread):
                                 Commands.GRAB.value, Commands.LOOSE.value]
 
     def run(self):
-        global current_command, servo_command
+        global current_command, servo_command, motor_speed
+        motor_speed = 100
         servo_command = Commands.STOP.value
         current_command = None
         while self.__running.isSet():
@@ -139,7 +140,7 @@ class ContinousDetect(threading.Thread):
 
             # -------自动模式---------
             elif current_command == Commands.FUNCTION_5_ON.value:
-                self.auto.run()
+                self.auto.run(motor_speed)
                 if current_command == Commands.FUNCTION_5_OFF.value:
                     self.auto.stop()
 
