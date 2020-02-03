@@ -70,7 +70,7 @@ def build_server(PORT=10223):
 
     screen.clear()
     screen.write(0, 0, 'connected from :')
-    screen.write(1, 1, addr)
+    screen.write(1, 1, addr[0])
     return tcp_cli_sock, addr
 
 
