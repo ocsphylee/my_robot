@@ -39,6 +39,7 @@ def wifi_check():
         s.connect(("1.1.1.1", 80))
         ipaddr_check = s.getsockname()[0]
         s.close()
+        screen.clear()
         screen.write(0, 0, 'Find Me Here:')
         screen.write(1, 1, ipaddr_check)
     except:
@@ -48,6 +49,7 @@ def wifi_check():
         ap_threading.setDaemon(True)
         ap_threading.start()  # Thread starts
         led.celebrate()
+        screen.clear()
         screen.write(0, 0, 'WiFi Created:')
         screen.write(1, 1, 'Groovy  12345678')
 
@@ -65,6 +67,10 @@ def build_server(PORT=10223):
     print('waiting for connection...')
     tcp_cli_sock, addr = tcp_ser_sock.accept()
     print('...connected from :', addr)
+
+    screen.clear()
+    screen.write(0, 0, 'connected from :')
+    screen.write(1, 1, addr)
     return tcp_cli_sock, addr
 
 
@@ -153,10 +159,11 @@ class ContinousDetect(threading.Thread):
 
 def execute_commands(bufsiz=1024):
     global current_command, servo_command, motor_speed
-    motor_speed = 100
     # motor方向
     direction_command = 'no'
     turn_command = 'no'
+    motor_speed = 100
+    motor_radius = 1
 
     continous_detect = ContinousDetect()
     continous_detect.start()
@@ -357,12 +364,19 @@ if __name__ == '__main__':
     yuntai = YunTai()
     yuntai.servo_init()
     servo_speed = 1
-    # 实例化屏幕对象
-    screen = LCD()
-    motor_radius = 1
+
+    # 实例化Port，关闭
     switch = Switch()
     switch.set_all_switch_off()
 
+    # 实例化屏幕对象
+    screen = LCD()
+    screen.clear()
+    screen.write(0, 0, 'Greetings!!')
+    screen.write(4, 1, 'OCSPHY')
+    time.sleep(3)
+    screen.clear()
+    screen.write(0, 0, 'Starting Robot..')
 
     try:
         # 实例化LED对象，并设置颜色
