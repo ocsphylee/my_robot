@@ -21,18 +21,18 @@ class TrackingMove:
         except:
             pass
 
-    def run(self):
+    def run(self, speed):
 
         self.sensor.tracking_result()
 
         if self.sensor.status_middle:
-            move.move(Commands.FORWARD.value, Commands.NO.value, 100,  1)
+            move.move(Commands.FORWARD.value, Commands.NO.value, speed,  1)
         elif self.sensor.status_left == 1:
-            move.move(Commands.FORWARD.value, Commands.RIGHT.value, 100, 1)
+            move.move(Commands.FORWARD.value, Commands.RIGHT.value, speed, 1)
         elif self.sensor.status_right == 1:
-            move.move(Commands.FORWARD.value, Commands.LEFT.value, 100, 1)
+            move.move(Commands.FORWARD.value, Commands.LEFT.value, speed, 1)
         else:
-            move.move(Commands.BACKWARD.value, Commands.NO.value, 100, 1)
+            move.move(Commands.BACKWARD.value, Commands.NO.value, speed, 1)
 
     def stop(self):
         move.motor_stop()

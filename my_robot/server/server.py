@@ -134,7 +134,7 @@ class ContinousDetect(threading.Thread):
 
             # -------红外循迹---------
             if current_command == Commands.FUNCTION_4_ON.value:
-                self.tracking.run()
+                self.tracking.run(motor_speed)
                 if current_command == Commands.FUNCTION_4_OFF.value:
                     self.tracking.stop()
 
