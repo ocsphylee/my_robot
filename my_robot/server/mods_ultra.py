@@ -42,4 +42,4 @@ if __name__ == '__main__':
     while 1:
         print(checkdist())
         time.sleep(1)
-        GPIO.cleanup()
+

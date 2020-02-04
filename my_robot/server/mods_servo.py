@@ -187,6 +187,7 @@ if __name__ == '__main__':
         yuntai.servo_turn(command, servo_speed=30)
 
         if command == 'q':
+            yuntai.servo_init()
             break
         elif command == 'ahead':
             yuntai.ahead()
