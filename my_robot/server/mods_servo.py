@@ -82,7 +82,7 @@ class YunTai:
 
         self.pwm2_init = 300
         self.pwm2_max = 700
-        self.pwm2_min = 100
+        self.pwm2_min = 10
         self.pwm2_pos = self.pwm2_init
 
         self.pwm3_init = 300
