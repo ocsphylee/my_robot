@@ -25,6 +25,8 @@ import imutils
 '''
 ---------------PID-------------
 '''
+
+
 class PID:
     def __init__(self):
         self.Kp = 0
@@ -32,16 +34,16 @@ class PID:
         self.Ki = 0
         self.Initialize()
 
-    def SetKp(self,invar):
+    def SetKp(self, invar):
         self.Kp = invar
 
-    def SetKi(self,invar):
+    def SetKi(self, invar):
         self.Ki = invar
 
-    def SetKd(self,invar):
+    def SetKd(self, invar):
         self.Kd = invar
 
-    def SetPrevError(self,preverror):
+    def SetPrevError(self, preverror):
         self.prev_error = preverror
 
     def Initialize(self):
@@ -54,22 +56,22 @@ class PID:
         self.Ci = 0
         self.Cd = 0
 
-    def GenOut(self,error):
+    def GenOut(self, error):
         self.currtime = time.time()
         dt = self.currtime - self.prevtime
         de = error - self.prev_error
 
-        self.Cp = self.Kp*error
-        self.Ci += error*dt
+        self.Cp = self.Kp * error
+        self.Ci += error * dt
 
         self.Cd = 0
         if dt > 0:
-            self.Cd = de/dt
+            self.Cd = de / dt
 
         self.prevtime = self.currtime
         self.prev_error = error
 
-        return self.Cp + (self.Ki*self.Ci) + (self.Kd*self.Cd)
+        return self.Cp + (self.Ki * self.Ci) + (self.Kd * self.Cd)
 
 
 '''
@@ -93,12 +95,8 @@ switch = mods_switch.Switch()
 
 Y_lock = 0
 X_lock = 0
-tor	= 17
+tor = 17
 UltraData = 3
-
-
-CVrun = 1
-
 
 
 class PicFunction:
@@ -114,6 +112,7 @@ class CvFindLine(PicFunction):
     """
     图像循迹
     """
+
     def __init__(self):
         self.frameRender = 1
         self.speed = 90
@@ -121,127 +120,155 @@ class CvFindLine(PicFunction):
         self.linePos_1 = 440
         self.linePos_2 = 380
         self.findLineError = 20
+        self.CVrun = 1
 
-    def find_line_ctrl(self, pos_input, set_center):
+        self.left_pos_1 = None
+        self.right_pos_1 = None
+        self.left_pos_2 = None
+        self.right_pos_2 = None
+        self.center = 320
 
+    def find_line_ctrl(self, pos_input):
+        """
+        电机控制：通过控制小车移动，使线的中心和指定的点重合（在一定范围内），从而实现图像循迹。
+        :param pos_input: 当前的线的中心
+        :return:
+        """
         if pos_input:
-            if pos_input > (set_center + self.findLineError):
+            if pos_input > (self.center + self.findLineError):
+                # 右转
                 move.motor_stop()
-                # turnRight
-                error = (pos_input - 320) / 5
+                error = (pos_input - self.center) / 5
                 outv = int(round((pid.GenOut(error)), 0))
-                move.move(Commands.NO.value, Commands.RIGHT.value, self.speed,  0.5)
+                move.move(Commands.NO.value, Commands.RIGHT.value, self.speed, 0.5)
                 time.sleep(0.05)
                 move.motor_stop()
                 pass
-            elif pos_input < (set_center - self.findLineError):
+            elif pos_input < (self.center - self.findLineError):
+                # 左转
                 move.motor_stop()
-                # turnLeft
-                error = (320 - pos_input) / 5
+                error = (self.center - pos_input) / 5
                 outv = int(round((pid.GenOut(error)), 0))
-                move.move(Commands.NO.value, Commands.LEFT.value , self.speed, 0.5)
+                move.move(Commands.NO.value, Commands.LEFT.value, self.speed, 0.5)
                 time.sleep(0.05)
                 move.motor_stop()
                 pass
             else:
-                if CVrun:
-                    move.move(Commands.FORWARD.value, Commands.NO.value, self.speed,  0.5)
-                # forward
+                if self.CVrun:
+                    # 向前
+                    move.move(
+                        Commands.FORWARD.value,
+                        Commands.NO.value,
+                        self.speed,
+                        0.5)
                 pass
         else:
-            if CVrun:
+            if self.CVrun:
                 move.motor_stop()
-                move.move(Commands.BACKWARD.value, Commands.NO.value,self.speed, 0.5)
+                move.move(
+                    Commands.BACKWARD.value,
+                    Commands.NO.value,
+                    self.speed,
+                    0.5)
             pass
 
-    def run(self,frame_image):
-        """
-
-
-        """
-        global frame_findline
-        frame_findline = cv2.cvtColor(frame_image, cv2.COLOR_BGR2GRAY)
-        retval, frame_findline = cv2.threshold(frame_findline, 0, 255, cv2.THRESH_OTSU)
-        frame_findline = cv2.erode(frame_findline, None, iterations=6)
-        color_pos_1 = frame_findline[self.linePos_1]
-        color_pos_2 = frame_findline[self.linePos_2]
+    def get_center(self, line_1, line_2):
         try:
-            line_color_count_pos_1 = np.sum(color_pos_1 == self.lineColorSet)
-            line_color_count_pos_2 = np.sum(color_pos_2 == self.lineColorSet)
+            # 计算两行中lineColorSet的像素点数量
+            line_color_count_pos_1 = np.sum(line_1 == self.lineColorSet)
+            line_color_count_pos_2 = np.sum(line_2 == self.lineColorSet)
 
-            line_index_pos_1 = np.where(color_pos_1 == self.lineColorSet)
-            line_index_pos_2 = np.where(color_pos_2 == self.lineColorSet)
+            # 获取lineColorSet点的索引值
+            line_index_pos_1 = np.where(line_1 == self.lineColorSet)
+            line_index_pos_2 = np.where(line_2 == self.lineColorSet)
 
+            # 为了索引不出错
             if line_color_count_pos_1 == 0:
                 line_color_count_pos_1 = 1
             if line_color_count_pos_2 == 0:
                 line_color_count_pos_2 = 1
 
-            left_pos_1 = line_index_pos_1[0][line_color_count_pos_1 - 1]
-            right_pos_1 = line_index_pos_1[0][0]
-            center_pos_1 = int((left_pos_1 + right_pos_1) / 2)
+            # 对于给定的这两行，取第一个和最后一个满足lineColorSet的像素点，并求均值
+            self.left_pos_1 = line_index_pos_1[0][line_color_count_pos_1 - 1]
+            self.right_pos_1 = line_index_pos_1[0][0]
+            center_pos_1 = int((self.left_pos_1 + self.right_pos_1) / 2)
 
-            left_pos_2 = line_index_pos_2[0][line_color_count_pos_2 - 1]
-            right_pos_2 = line_index_pos_2[0][0]
-            center_pos_2 = int((left_pos_2 + right_pos_2) / 2)
+            self.left_pos_2 = line_index_pos_2[0][line_color_count_pos_2 - 1]
+            self.right_pos_2 = line_index_pos_2[0][0]
+            center_pos_2 = int((self.left_pos_2 + self.right_pos_2) / 2)
 
-            center = int((center_pos_1 + center_pos_2) / 2)
+            # 求给定范围内的lineColorSet区域的（左右）中心
+            center_pos = int((center_pos_1 + center_pos_2) / 2)
         except:
-            center = None
+            center_pos = None
             pass
 
-        self.find_line_ctrl(center, 320)
+        return center_pos
 
+    def draw_lines_text(self, img, center_pos):
+        cv2.line(img, (self.left_pos_1, (self.linePos_1 + 30)),
+                 (self.left_pos_1, (self.linePos_1 - 30)), (255, 128, 64), 1)
+        cv2.line(img, (self.right_pos_1, (self.linePos_1 + 30)),
+                 (self.right_pos_1, (self.linePos_1 - 30)), (64, 128, 255), )
+        cv2.line(img, (0, self.linePos_1),
+                 (640, self.linePos_1), (255, 255, 64), 1)
 
-        try:
-            if self.lineColorSet == 255:
-                cv2.putText(frame_image, 'Following White Line', (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                            (128, 255, 128), 1, cv2.LINE_AA)
-                cv2.putText(frame_findline, 'Following White Line', (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                            (128, 255, 128), 1, cv2.LINE_AA)
-            else:
-                cv2.putText(frame_image, 'Following Black Line', (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                            (128, 255, 128), 1, cv2.LINE_AA)
-                cv2.putText(frame_findline, 'Following Black Line', (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                            (128, 255, 128), 1, cv2.LINE_AA)
+        cv2.line(img, (self.left_pos_2, (self.linePos_2 + 30)),
+                 (self.left_pos_2, (self.linePos_2 - 30)), (255, 128, 64), 1)
+        cv2.line(img, (self.right_pos_2, (self.linePos_2 + 30)),
+                 (self.right_pos_2, (self.linePos_2 - 30)), (64, 128, 255), 1)
+        cv2.line(img, (0, self.linePos_2),
+                 (640, self.linePos_2), (255, 255, 64), 1)
 
-            if self.frameRender:
-                cv2.line(frame_image, (left_pos_1, (self.linePos_1 + 30)), (left_pos_1, (self.linePos_1 - 30)), (255, 128, 64), 1)
-                cv2.line(frame_image, (right_pos_1, (self.linePos_1 + 30)), (right_pos_1, (self.linePos_1 - 30)), (64, 128, 255), )
-                cv2.line(frame_image, (0, self.linePos_1), (640, self.linePos_1), (255, 255, 64), 1)
+        cv2.line(img, ((center_pos - 20), int((self.linePos_1 + self.linePos_2) / 2)),
+                 ((center_pos + 20), int((self.linePos_1 + self.linePos_2) / 2)), (0, 0, 0), 1)
+        cv2.line(img, (center_pos, int((self.linePos_1 + self.linePos_2) / 2 + 20)),
+                 (center_pos, int((self.linePos_1 + self.linePos_2) / 2 - 20)), (0, 0, 0), 1)
 
-                cv2.line(frame_image, (left_pos_2, (self.linePos_2 + 30)), (left_pos_2, (self.linePos_2 - 30)), (255, 128, 64), 1)
-                cv2.line(frame_image, (right_pos_2, (self.linePos_2 + 30)), (right_pos_2, (self.linePos_2 - 30)), (64, 128, 255), 1)
-                cv2.line(frame_image, (0, self.linePos_2), (640, self.linePos_2), (255, 255, 64), 1)
+        if self.lineColorSet == 255:
+            cv2.putText(img, 'Following White Line', (30, 50), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (128, 255, 128), 1, cv2.LINE_AA)
 
-                cv2.line(frame_image, ((center - 20), int((self.linePos_1 + self.linePos_2) / 2)),
-                         ((center + 20), int((self.linePos_1 + self.linePos_2) / 2)), (0, 0, 0), 1)
-                cv2.line(frame_image, (center, int((self.linePos_1 + self.linePos_2) / 2 + 20)),
-                         (center, int((self.linePos_1 + self.linePos_2) / 2 - 20)), (0, 0, 0), 1)
-            else:
-                cv2.line(frame_findline, (left_pos_1, (self.linePos_1 + 30)), (left_pos_1, (self.linePos_1 - 30)), (255, 128, 64),
-                         1)
-                cv2.line(frame_findline, (right_pos_1, (self.linePos_1 + 30)), (right_pos_1, (self.linePos_1 - 30)), (64, 128, 255),
-                         1)
-                cv2.line(frame_findline, (0, self.linePos_1), (640, self.linePos_1), (255, 255, 64), 1)
-
-                cv2.line(frame_findline, (left_pos_2, (self.linePos_2 + 30)), (left_pos_2, (self.linePos_2 - 30)), (255, 128, 64),
-                         1)
-                cv2.line(frame_findline, (right_pos_2, (self.linePos_2 + 30)), (right_pos_2, (self.linePos_2 - 30)), (64, 128, 255),
-                         1)
-                cv2.line(frame_findline, (0, self.linePos_2), (640, self.linePos_2), (255, 255, 64), 1)
-
-                cv2.line(frame_findline, ((center - 20), int((self.linePos_1 + self.linePos_2) / 2)),
-                         ((center + 20), int((self.linePos_1 + self.linePos_2) / 2)), (0, 0, 0), 1)
-                cv2.line(frame_findline, (center, int((self.linePos_1 + self.linePos_2) / 2 + 20)),
-                         (center, int((self.linePos_1 + self.linePos_2) / 2 - 20)), (0, 0, 0), 1)
-        except:
-            pass
-
-        if not self.frameRender:
-            return frame_findline
         else:
-            return frame_image
+            cv2.putText(img, 'Following Black Line', (30, 50), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (128, 255, 128), 1, cv2.LINE_AA)
+
+    def run(self, frame_image):
+        """
+        执行CVFindline命令
+        """
+        global frame_findline
+        # 转成灰度
+        frame_findline = cv2.cvtColor(frame_image, cv2.COLOR_BGR2GRAY)
+        # 用大津算法转成二值图像
+        retval, frame_findline = cv2.threshold(
+            frame_findline, 0, 255, cv2.THRESH_OTSU)
+        # 侵蚀：用于降噪
+        frame_findline = cv2.erode(frame_findline, None, iterations=6)
+        # 取指定两行
+        color_pos_1 = frame_findline[self.linePos_1]
+        color_pos_2 = frame_findline[self.linePos_2]
+
+        center_pos = self.get_center(color_pos_1, color_pos_2)
+
+        self.find_line_ctrl(center_pos)
+
+        # 画线和文字，返回图片
+        if self.frameRender:
+            try:
+                self.draw_lines_text(frame_image, center_pos)
+            except :
+                pass
+            finally:
+                return frame_image
+
+        else:
+            try:
+                self.draw_lines_text(frame_findline, center_pos)
+            except :
+                pass
+            finally:
+                return frame_findline
 
     def stop(self):
         move.motor_stop()
@@ -271,7 +298,8 @@ class FindColor(PicFunction):
                                 cv2.CHAIN_APPROX_SIMPLE)[-2]
         center = None
         if len(cnts) > 0:
-            cv2.putText(frame_image, 'Target Detected', (40, 60), font, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+            cv2.putText(frame_image, 'Target Detected', (40, 60),
+                        font, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
             c = max(cnts, key=cv2.contourArea)
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             M = cv2.moments(c)
@@ -279,8 +307,8 @@ class FindColor(PicFunction):
             X = int(x)
             Y = int(y)
             if radius > 10:
-                cv2.rectangle(frame_image, (int(x - radius), int(y + radius)), (int(x + radius), int(y - radius)),
-                              (255, 255, 255), 1)
+                cv2.rectangle(frame_image, (int(x - radius), int(y + radius)),
+                              (int(x + radius), int(y - radius)), (255, 255, 255), 1)
 
             if Y < (240 - tor):
                 error = (240 - Y) / 5
@@ -316,9 +344,9 @@ class FindColor(PicFunction):
             else:
                 switch.set_all_switch_off()
 
-
         else:
-            cv2.putText(frame_image, 'Target Detecting', (40, 60), font, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+            cv2.putText(frame_image, 'Target Detecting', (40, 60),
+                        font, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
             move.motor_stop()
 
         for i in range(1, len(pts)):
@@ -378,7 +406,8 @@ class MotionGet(PicFunction):
             # compute the bounding box for the contour, draw it on the frame,
             # and update the text
             (x, y, w, h) = cv2.boundingRect(c)
-            cv2.rectangle(frame_image, (x, y), (x + w, y + h), (128, 255, 0), 1)
+            cv2.rectangle(
+                frame_image, (x, y), (x + w, y + h), (128, 255, 0), 1)
             text = "Occupied"
             self.motionCounter += 1
 
@@ -395,6 +424,3 @@ class MotionGet(PicFunction):
     def stop(self):
         led.color_wipe(0, 0, 0)
         switch.set_all_switch_off()
-
-
-
