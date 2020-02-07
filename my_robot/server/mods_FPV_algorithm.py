@@ -313,12 +313,12 @@ class FindColor(PicFunction):
             if Y < (240 - tor):
                 error = (240 - Y) / 5
                 outv = int(round((pid.GenOut(error)), 0))
-                yuntai.servo_turn(Commands.UP.value, servo_speed=outv)
+                yuntai.servo_turn(Commands.LOOKUP.value, servo_speed=outv)
                 Y_lock = 0
             elif Y > (240 + tor):
                 error = (Y - 240) / 5
                 outv = int(round((pid.GenOut(error)), 0))
-                yuntai.servo_turn(Commands.DOWN.value, servo_speed=outv)
+                yuntai.servo_turn(Commands.LOOKDOWN.value, servo_speed=outv)
                 Y_lock = 0
             else:
                 Y_lock = 1
