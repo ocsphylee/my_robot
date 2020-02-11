@@ -39,9 +39,9 @@ def wifi_check():
         s.connect(("1.1.1.1", 80))
         ipaddr_check = s.getsockname()[0]
         s.close()
-        screen.clear()
-        screen.write(0, 0, 'Find Me Here:')
-        screen.write(1, 1, ipaddr_check)
+        # screen.clear()
+        # screen.write(0, 0, 'Find Me Here:')
+        # screen.write(1, 1, ipaddr_check)
     except:
         # Define a thread for data receiving
         ap_threading = threading.Thread(target=ap_thread)
@@ -49,9 +49,9 @@ def wifi_check():
         ap_threading.setDaemon(True)
         ap_threading.start()  # Thread starts
         led.celebrate()
-        screen.clear()
-        screen.write(0, 0, 'WiFi Created:')
-        screen.write(1, 1, 'Groovy  12345678')
+        # screen.clear()
+        # screen.write(0, 0, 'WiFi Created:')
+        # screen.write(1, 1, 'Groovy  12345678')
 
 
 def build_server(PORT=10223):
@@ -68,9 +68,9 @@ def build_server(PORT=10223):
     tcp_cli_sock, addr = tcp_ser_sock.accept()
     print('...connected from :', addr)
 
-    screen.clear()
-    screen.write(0, 0, 'connected from :')
-    screen.write(1, 1, addr[0])
+    # screen.clear()
+    # screen.write(0, 0, 'connected from :')
+    # screen.write(1, 1, addr[0])
     return tcp_cli_sock, addr
 
 
@@ -371,13 +371,13 @@ if __name__ == '__main__':
     switch.set_all_switch_off()
 
     # 实例化屏幕对象
-    screen = LCD()
-    screen.clear()
-    screen.write(0, 0, 'Greetings!!')
-    screen.write(4, 1, 'OCSPHY')
-    time.sleep(3)
-    screen.clear()
-    screen.write(0, 0, 'Starting Robot..')
+    # screen = LCD()
+    # screen.clear()
+    # screen.write(0, 0, 'Greetings!!')
+    # screen.write(4, 1, 'OCSPHY')
+    # time.sleep(3)
+    # screen.clear()
+    # screen.write(0, 0, 'Starting Robot..')
 
     try:
         # 实例化LED对象，并设置颜色
