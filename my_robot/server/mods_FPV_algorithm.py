@@ -249,8 +249,10 @@ class CvFindLine(PicFunction):
         color_pos_1 = frame_findline[self.linePos_1]
         color_pos_2 = frame_findline[self.linePos_2]
 
+        # 计算中点
         center_pos = self.get_center(color_pos_1, color_pos_2)
 
+        # 控制电机
         self.find_line_ctrl(center_pos)
 
         # 画线和文字，返回图片
@@ -382,8 +384,6 @@ class MotionGet(PicFunction):
             print("[INFO] starting background model...")
             self.avg = gray.copy().astype("float")
             return None
-            # TODO rawCapture.truncate(0)
-            # 					continue
 
         cv2.accumulateWeighted(gray, self.avg, 0.5)
         frame_delta = cv2.absdiff(gray, cv2.convertScaleAbs(self.avg))
