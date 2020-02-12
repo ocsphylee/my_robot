@@ -11,7 +11,7 @@ import picamera
 from picamera.array import PiRGBArray
 import cv2
 
-faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
+faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalcatface_extended.xml')
 
 camera = picamera.PiCamera()
 camera.resolution = (640, 480)
@@ -25,9 +25,9 @@ for frame in camera.capture_continuous(
     gray = cv2.cvtColor(frame_image, cv2.COLOR_BGR2GRAY)
     faces = faceCascade.detectMultiScale(
         gray,
-        scaleFactor=1.2,
+        scaleFactor=1.02,
         minNeighbors=5,
-        minSize=(20, 20)
+        minSize=(120, 120)
     )
 
     for (x, y, w, h) in faces:

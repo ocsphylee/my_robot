@@ -13,8 +13,8 @@ import os
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read('trainer/trainer.yml')
-cascadePath = "haarcascades/haarcascade_frontalface_default.xml"
-faceCascade = cv2.CascadeClassifier(cascadePath);
+cascadePath = 'haarcascades/haarcascade_frontalcatface_extended.xml'
+faceCascade = cv2.CascadeClassifier(cascadePath)
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -22,7 +22,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 id = 0
 
 # names related to ids: example ==> Marcelo: id=1,  etc
-names = ['None', 'Ocsphy', 'Ronustine']
+names = ['None', 'DaYe', 'ErYe']
 
 # Initialize and start realtime video capture
 cam = cv2.VideoCapture(0)
