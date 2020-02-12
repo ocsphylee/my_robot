@@ -7,18 +7,22 @@ Date:2020/2/12 13:44
 Descriptions:
 '''
 
-import numpy as np
+import picamera
+from picamera.array import PiRGBArray
 import cv2
 
 faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
 
-cap = cv2.VideoCapture(0)
-cap.set(3, 640)  # set Width
-cap.set(4, 480)  # set Height
+camera = picamera.PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 20
+raw_capture = PiRGBArray(camera, size=(640, 480))
 
-while True:
-    ret, img = cap.read()
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+for frame in camera.capture_continuous(
+        raw_capture, format="bgr", use_video_port=True):
+
+    frame_image = frame.array
+    gray = cv2.cvtColor(frame_image, cv2.COLOR_BGR2GRAY)
     faces = faceCascade.detectMultiScale(
         gray,
         scaleFactor=1.2,
@@ -27,15 +31,13 @@ while True:
     )
 
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        cv2.rectangle(frame_image, (x, y), (x + w, y + h), (255, 0, 0), 2)
         roi_gray = gray[y:y + h, x:x + w]
-        roi_color = img[y:y + h, x:x + w]
+        roi_color = frame_image[y:y + h, x:x + w]
 
-    cv2.imshow('video', img)
+    cv2.imshow('video', frame_image)
 
     k = cv2.waitKey(30) & 0xff
     if k == 27:  # press 'ESC' to quit
         break
-
-cap.release()
-cv2.destroyAllWindows()
+    raw_capture.truncate(0)
