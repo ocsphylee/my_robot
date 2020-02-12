@@ -16,7 +16,6 @@ cap.set(4, 480)  # set Height
 
 while (True):
     ret, frame = cap.read()
-    frame = cv2.flip(frame, -1)  # Flip camera vertically
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     cv2.imshow('frame', frame)
