@@ -44,6 +44,7 @@ camera.resolution = resol
 camera.framerate = 20
 raw_capture = PiRGBArray(camera, size= resol)
 skrink = 0.5
+emph = 2
 
 for frame in camera.capture_continuous(
         raw_capture, format="bgr", use_video_port=True):
@@ -90,10 +91,10 @@ for frame in camera.capture_continuous(
     # Display the results
     for (top, right, bottom, left), name in zip(face_locations, face_names):
         # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-        top *= 1 / skrink
-        right *= 1 / skrink
-        bottom *= 1 / skrink
-        left *= 1 / skrink
+        top *= emph
+        right *= emph
+        bottom *= emph
+        left *= emph
 
         # Draw a box around the face
         cv2.rectangle(frame_image, (left, top), (right, bottom), (0, 0, 255), 2)
