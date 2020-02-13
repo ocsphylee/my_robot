@@ -39,9 +39,11 @@ def wifi_check():
         s.connect(("1.1.1.1", 80))
         ipaddr_check = s.getsockname()[0]
         s.close()
+        led.color_wipe(0, 255, 0)
         # screen.clear()
         # screen.write(0, 0, 'Find Me Here:')
         # screen.write(1, 1, ipaddr_check)
+        return True
     except:
         # Define a thread for data receiving
         ap_threading = threading.Thread(target=ap_thread)
@@ -52,7 +54,7 @@ def wifi_check():
         # screen.clear()
         # screen.write(0, 0, 'WiFi Created:')
         # screen.write(1, 1, 'Groovy  12345678')
-
+        return False
 
 def build_server(PORT=10223):
     # 设置地址
@@ -171,7 +173,6 @@ def execute_commands(bufsiz=1024):
     continous_detect.pause()
 
     while True:
-
         data = str(tcp_cli_sock.recv(bufsiz).decode())
         if not data:
             continue
@@ -391,7 +392,11 @@ if __name__ == '__main__':
     --------------------WiFi检测，启动服务器------
     '''
     # WiFi检测，屏幕打印IP地址/热点
-    wifi_check()
+    for i in range(5):
+        if wifi_check():
+            break
+        time.sleep(1)
+
     tcp_cli_sock, addr = build_server(PORT=10223)
 
     '''
