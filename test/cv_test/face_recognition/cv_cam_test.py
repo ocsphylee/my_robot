@@ -25,9 +25,9 @@ for frame in camera.capture_continuous(
     gray = cv2.cvtColor(frame_image, cv2.COLOR_BGR2GRAY)
     faces = faceCascade.detectMultiScale(
         gray,
-        scaleFactor=1.02,
+        scaleFactor=1.1,
         minNeighbors=5,
-        minSize=(120, 120)
+        minSize=(20, 20)
     )
 
     for (x, y, w, h) in faces:

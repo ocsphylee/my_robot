@@ -12,33 +12,47 @@ from PIL import Image
 import os
 import cv2
 
-# Path for face image database
-path = 'dataset'
 
-recognizer = cv2.face.LBPHFaceRecognizer_create()
-detector = cv2.CascadeClassifier('haarcascades/haarcascade_frontalcatface_extended.xml')
+# 从文件夹获取样本和标签
+def get_img_label(path):
+    # 遍历路径下的所有文件
+    # ToDO: 改成遍历路径下的所有图片文件
+    img_path = [os.path.join(path, f) for f in os.listdir(path)]
 
-# function to get the images and label data
-def getImagesAndLabels(path):
-    imagePaths = [os.path.join(path, f) for f in os.listdir(path)]
-    faceSamples = []
+    face_samples = []
     ids = []
-    for imagePath in imagePaths:
+    for imagePath in img_path:
+        # 用PIL.Image打开并转成灰度，numpy转成数组图片，
         PIL_img = Image.open(imagePath).convert('L')  # convert it to grayscale
         img_numpy = np.array(PIL_img, 'uint8')
+
+        # 获取id和脸部图片
         id = int(os.path.split(imagePath)[-1].split(".")[1])
+        cascadePath = 'haarcascades/haarcascade_frontalcatface_extended.xml'
+        detector = cv2.CascadeClassifier(cascadePath)
         faces = detector.detectMultiScale(img_numpy)
+
         for (x, y, w, h) in faces:
-            faceSamples.append(img_numpy[y:y + h, x:x + w])
+            # 提取脸部图片
+            face_samples.append(img_numpy[y:y + h, x:x + w])
             ids.append(id)
-    return faceSamples, ids
+    return face_samples, ids
 
 
+# 开始训练
 print("\n [INFO] Training faces. It will take a few seconds. Wait ...")
-faces, ids = getImagesAndLabels(path)
+
+# 生成训练器
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+
+# 获取图片和id
+path = 'dataset'
+faces, ids = get_img_label(path)
+
+# 训练
 recognizer.train(faces, np.array(ids))
 
-# Save the model into trainer/trainer.yml
+# 保存训练模型 trainer/trainer.yml
 recognizer.write('trainer/trainer.yml')  # recognizer.save() worked on Mac, but not on Pi
 
 # Print the numer of faces trained and end program
