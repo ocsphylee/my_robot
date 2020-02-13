@@ -28,7 +28,6 @@ def load_sample(path):
         known_face_names.append(names)
     return known_face_encodings, known_face_names
 
-
 sample_path = 'known_people'
 
 known_face_encodings, known_face_names = load_sample(sample_path)
@@ -48,6 +47,7 @@ raw_capture = PiRGBArray(camera, size= resol)
 
 for frame in camera.capture_continuous(
         raw_capture, format="bgr", use_video_port=True):
+
     # 获取图片
     frame_image = frame.array
 
@@ -84,6 +84,7 @@ for frame in camera.capture_continuous(
 
     process_this_frame = not process_this_frame
 
+
     # Display the results
     for (top, right, bottom, left), name in zip(face_locations, face_names):
         # Scale back up face locations since the frame we detected in was scaled to 1/4 size
@@ -106,5 +107,4 @@ for frame in camera.capture_continuous(
     # Hit 'q' on the keyboard to quit!
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-    raw_capture.truncate(0)
 
