@@ -60,7 +60,6 @@ class XboxJoyStick:
                         self.command = Commands.FORWARD.value
                     else:
                         self.command = Commands.DS.value
-                time.sleep(0.02)
 
 if __name__ == '__main__':
 
