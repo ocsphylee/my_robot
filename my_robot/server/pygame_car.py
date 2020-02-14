@@ -98,30 +98,33 @@ if __name__ == '__main__':
     motor_radius = 1
 
     move.setup()
-    while connect:
-        data = js.command
-        if not data:
+    while 1:
+        if connect:
+            data = js.command
+            if not data:
+                pass
+            elif Commands.FORWARD.value == data:
+                direction_command = Commands.FORWARD.value
+                move.move(direction_command, turn_command, motor_speed, motor_radius)
+
+            elif Commands.BACKWARD.value == data:
+                direction_command = Commands.BACKWARD.value
+                move.move(direction_command, turn_command, motor_speed, motor_radius)
+
+            elif Commands.DS.value in data:
+                direction_command = Commands.NO.value
+                move.move(direction_command, turn_command, motor_speed, motor_radius)
+
+            elif Commands.LEFT.value == data:
+                turn_command = Commands.LEFT.value
+                move.move(direction_command, turn_command, motor_speed, motor_radius)
+
+            elif Commands.RIGHT.value == data:
+                turn_command = Commands.RIGHT.value
+                move.move(direction_command, turn_command, motor_speed, motor_radius)
+
+            elif Commands.TS.value in data:
+                turn_command = Commands.NO.value
+                move.move(direction_command, turn_command, motor_speed, motor_radius)
+        else:
             pass
-        elif Commands.FORWARD.value == data:
-            direction_command = Commands.FORWARD.value
-            move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-        elif Commands.BACKWARD.value == data:
-            direction_command = Commands.BACKWARD.value
-            move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-        elif Commands.DS.value in data:
-            direction_command = Commands.NO.value
-            move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-        elif Commands.LEFT.value == data:
-            turn_command = Commands.LEFT.value
-            move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-        elif Commands.RIGHT.value == data:
-            turn_command = Commands.RIGHT.value
-            move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-        elif Commands.TS.value in data:
-            turn_command = Commands.NO.value
-            move.move(direction_command, turn_command, motor_speed, motor_radius)
