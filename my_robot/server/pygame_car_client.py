@@ -11,7 +11,7 @@ import pygame
 import time
 from mods_commands import Commands
 import threading
-import mods_motor as move
+from socket import *
 
 class XboxJoyStick:
 
@@ -47,19 +47,26 @@ class XboxJoyStick:
                 axis = self.js0.get_axis(i)
                 if i == 0:
                     if axis > 0.3:
-                        self.command = Commands.RIGHT.value
+                        # self.command = Commands.RIGHT.value
+                        s.send(Commands.RIGHT.value.encode())
                     elif axis < -0.3:
-                        self.command = Commands.LEFT.value
+                        # self.command = Commands.LEFT.value
+                        s.send((Commands.LEFT.value).encode())
                     else:
-                        self.command = Commands.TS.value
-
+                        # self.command = Commands.TS.value
+                        s.send((Commands.TS.value).encode())
                 if i == 1:
                     if axis > 0.3:
-                        self.command = Commands.BACKWARD.value
+                        # self.command = Commands.BACKWARD.value
+                        s.send((Commands.BACKWARD.value).encode())
+
                     elif axis < -0.3:
-                        self.command = Commands.FORWARD.value
+                        # self.command = Commands.FORWARD.value
+                        s.send((Commands.FORWARD.value).encode())
+
                     else:
-                        self.command = Commands.DS.value
+                        # self.command = Commands.DS.value
+                        s.send((Commands.DS.value).encode())
                 # time.sleep(0.02)
 
 if __name__ == '__main__':
@@ -87,44 +94,20 @@ if __name__ == '__main__':
             js.run()
 
 
+    def socket_connect():
+        global s
+        s = socket()  # 创建 socket 对象
+        host = gethostname()  # 获取本地主机名
+        port = 12345  # 设置端口号
+        s.connect((host, port))
+
+
+    sc = threading.Thread(target=socket_connect)  # Define a thread for connection
+    sc.setDaemon(True)  # 'True' means it is a front thread,it would close when the mainloop() closes
+    sc.start()
+
     info_threading = threading.Thread(target=run)  # Define a thread for FPV and OpenCV
     info_threading.setDaemon(True)  # 'True' means it is a front thread,it would close when the mainloop() closes
     info_threading.start()  # Thread starts
     time.sleep(1)
 
-    direction_command = 'no'
-    turn_command = 'no'
-    motor_speed = 100
-    motor_radius = 1
-
-    move.setup()
-    while 1:
-        if connect:
-            data = js.command
-            if not data:
-                pass
-            elif Commands.FORWARD.value == data:
-                direction_command = Commands.FORWARD.value
-                move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-            elif Commands.BACKWARD.value == data:
-                direction_command = Commands.BACKWARD.value
-                move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-            elif Commands.DS.value in data:
-                direction_command = Commands.NO.value
-                move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-            elif Commands.LEFT.value == data:
-                turn_command = Commands.LEFT.value
-                move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-            elif Commands.RIGHT.value == data:
-                turn_command = Commands.RIGHT.value
-                move.move(direction_command, turn_command, motor_speed, motor_radius)
-
-            elif Commands.TS.value in data:
-                turn_command = Commands.NO.value
-                move.move(direction_command, turn_command, motor_speed, motor_radius)
-        else:
-            pass
