@@ -77,22 +77,6 @@ if __name__ == '__main__':
         js_dev = open(fn, 'rb')
         return js_dev
 
-    def run():
-        global js, connect
-        connect = False
-        while not connect:
-            try:
-                js_dev = open_stick()
-                if js_dev.read(8):
-                    connect = True
-                    break
-            except:
-                time.sleep(5)
-                pass
-        if connect:
-            js = XboxJoyStick()
-            js.run()
-
 
     def socket_connect():
         global s
@@ -106,8 +90,20 @@ if __name__ == '__main__':
     sc.setDaemon(True)  # 'True' means it is a front thread,it would close when the mainloop() closes
     sc.start()
 
-    info_threading = threading.Thread(target=run)  # Define a thread for FPV and OpenCV
-    info_threading.setDaemon(True)  # 'True' means it is a front thread,it would close when the mainloop() closes
-    info_threading.start()  # Thread starts
-    time.sleep(1)
+    connect = False
+    while not connect:
+        try:
+            js_dev = open_stick()
+            if js_dev.read(8):
+                connect = True
+                break
+        except:
+            time.sleep(5)
+            pass
+    if connect:
+        js = XboxJoyStick()
+        js.run()
+
+
+
 
