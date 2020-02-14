@@ -122,6 +122,7 @@ move.setup()
 while 1:
 
     data = str(tcp_cli_sock.recv(bufsiz).decode())
+    print(data)
     if not data:
         pass
     elif Commands.FORWARD.value == data:
