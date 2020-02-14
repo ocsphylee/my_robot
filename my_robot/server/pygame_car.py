@@ -72,15 +72,18 @@ if __name__ == '__main__':
 
     def run():
         global js
-        while 1:
+        connect = False
+        while not connect:
             try:
                 js_dev = open_stick()
+                connect = True
                 break
             except:
                 time.sleep(5)
                 pass
-        js = XboxJoyStick()
-        js.run()
+        if connect:
+            js = XboxJoyStick()
+            js.run()
 
 
     info_threading = threading.Thread(target=run)  # Define a thread for FPV and OpenCV
