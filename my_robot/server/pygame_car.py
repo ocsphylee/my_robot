@@ -53,13 +53,14 @@ class XboxJoyStick:
                     else:
                         self.command = Commands.TS.value
 
-                elif i == 1:
+                if i == 1:
                     if axis > 0.3:
                         self.command = Commands.BACKWARD.value
                     elif axis < -0.3:
                         self.command = Commands.FORWARD.value
                     else:
                         self.command = Commands.DS.value
+                # time.sleep(0.02)
 
 if __name__ == '__main__':
 
