@@ -98,7 +98,7 @@ if __name__ == '__main__':
         global s
         s = socket()  # 创建 socket 对象
         host = gethostname()  # 获取本地主机名
-        port = 12345  # 设置端口号
+        port = 10220  # 设置端口号
         s.connect((host, port))
 
 
