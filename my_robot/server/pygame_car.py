@@ -71,13 +71,14 @@ if __name__ == '__main__':
         return js_dev
 
     def run():
-        global js
+        global js, connect
         connect = False
         while not connect:
             try:
                 js_dev = open_stick()
-                connect = True
-                break
+                if js_dev.read(8):
+                    connect = True
+                    break
             except:
                 time.sleep(5)
                 pass
@@ -97,7 +98,7 @@ if __name__ == '__main__':
     motor_radius = 1
 
     move.setup()
-    while 1:
+    while connect:
         data = js.command
         if not data:
             pass
