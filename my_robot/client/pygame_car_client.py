@@ -27,6 +27,9 @@ class XboxJoyStick:
         pygame.joystick.init()
         self.js0 = pygame.joystick.Joystick(0)
         self.js0.init()
+        name = self.js0.get_name()
+
+        print('{} is connected'.format(name))
 
         while self.done == False:
             # EVENT PROCESSING STEP
@@ -34,40 +37,73 @@ class XboxJoyStick:
                 if event.type == pygame.QUIT:  # If user clicked close
                     self.done = True  # Flag that we are done so we exit this loop
 
-            # Get the name from the OS for the controller/joystick
-            name = self.js0.get_name()
-
-
             # Usually axis run in pairs, up/down for one, and left/right for
             # the other.
             axes = self.js0.get_numaxes()
-
-
             for i in range(axes):
                 axis = self.js0.get_axis(i)
+
+                # --------左侧摇杆控制小车移动----------
+
+                #    ----控制左右移动----
                 if i == 0:
                     if axis > 0.3:
                         # self.command = Commands.RIGHT.value
                         s.send(Commands.RIGHT.value.encode())
                     elif axis < -0.3:
                         # self.command = Commands.LEFT.value
-                        s.send((Commands.LEFT.value).encode())
+                        s.send(Commands.LEFT.value.encode())
                     else:
                         # self.command = Commands.TS.value
-                        s.send((Commands.TS.value).encode())
+                        s.send(Commands.TS.value.encode())
+
+                #    ----控制前后移动----
                 if i == 1:
                     if axis > 0.3:
                         # self.command = Commands.BACKWARD.value
-                        s.send((Commands.BACKWARD.value).encode())
-
+                        s.send(Commands.BACKWARD.value.encode())
                     elif axis < -0.3:
                         # self.command = Commands.FORWARD.value
-                        s.send((Commands.FORWARD.value).encode())
-
+                        s.send(Commands.FORWARD.value.encode())
                     else:
                         # self.command = Commands.DS.value
-                        s.send((Commands.DS.value).encode())
-                # time.sleep(0.02)
+                        s.send(Commands.DS.value.encode())
+
+                # --------左侧摇杆控制云台----------
+
+                #    ----控制左右转动----
+                if i == 2:
+                    if axis > 0.3:
+                        s.send(Commands.LOOKRIGHT.value.encode())
+                    elif axis < -0.3:
+                        s.send(Commands.LOOKLEFT.value.encode())
+                    else:
+                        s.send(Commands.STOP.value.encode())
+
+                #    ----控制摇臂上下转动----
+                if i == 3:
+                    if axis > 0.3:
+                        s.send(Commands.DOWN.value.encode())
+                    elif axis < -0.3:
+                        s.send(Commands.UP.value.encode())
+                    else:
+                        s.send(Commands.STOP.value.encode())
+
+                #    ----控制摄像头上下转动----
+                if i == 4:
+                    if axis > -0.8:
+                        s.send(Commands.LOOKUP.value.encode())
+                    else:
+                        s.send(Commands.STOP.value.encode())
+
+                if i == 5:
+                    if axis > -0.8:
+                        s.send(Commands.LOOKDOWN.value.encode())
+                    else:
+                        s.send(Commands.STOP.value.encode())
+
+                # 控制摇臂抓取，放松
+
 
 if __name__ == '__main__':
 
