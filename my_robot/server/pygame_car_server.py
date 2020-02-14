@@ -177,15 +177,15 @@ while 1:
         #     tcp_cli_sock.send(Commands.SWITCH_3_OFF.value.encode())
 
         # --------------------云台控制----------------------
-    elif data in continous_detect.yuntai_commands:
-        servo_command = data
-        continous_detect.resume()
-
-    elif Commands.STOP.value == data:
-        servo_command = Commands.STOP.value
-
-    elif Commands.HOME.value == data:
-        yuntai.ahead()
+    # elif data in continous_detect.yuntai_commands:
+    #     servo_command = data
+    #     continous_detect.resume()
+    #
+    # elif Commands.STOP.value == data:
+    #     servo_command = Commands.STOP.value
+    #
+    # elif Commands.HOME.value == data:
+    #     yuntai.ahead()
 
         # --------------------功能按钮----------------------
         # #      --------------超声波扫描----------------
