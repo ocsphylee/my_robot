@@ -25,7 +25,7 @@
  # THE SOFTWARE.
  #
 
-from waveshare_1in8_LCD import LCD_Config
+import mods_LCD_Config as LCD_Config
 import RPi.GPIO as GPIO
 import numpy as np
 
