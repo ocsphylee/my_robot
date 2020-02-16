@@ -72,7 +72,7 @@ def main():
         LCD_Config.Driver_Delay_ms(3000)
         
         draw = ImageDraw.Draw(image)
-        image = Image.open(picdir+'/Limage.bmp')
+        image = Image.open(picdir+'/welcome.bmp')
         LCD.LCD_ShowImage(image)
         # LCD_Config.Driver_Delay_ms(3000)
     

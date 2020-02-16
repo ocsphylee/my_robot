@@ -32,13 +32,25 @@ LCD.LCD_Init(Lcd_ScanDir)
 LCD.LCD_Clear(0xffff)
 
 
-font18 = ImageFont.truetype(picdir+'/Font.ttc', 10)
+cn_font18 = ImageFont.truetype(picdir+'/Font.ttc', 10)
+
+en_font20 = ImageFont.truetype('/usr/share/fonts/truetype/lato/Lato-BoldItalic.ttf', size=20)
+
+en_font10 = ImageFont.truetype('/usr/share/fonts/truetype/lato/Lato-BoldItalic.ttf', size=10)
 
 while 1:
-    image = Image.new("RGB", (LCD.LCD_Dis_Column, LCD.LCD_Dis_Page), "WHITE")
+    image = Image.open(picdir+'/welcome.bmp')
     draw = ImageDraw.Draw(image)
-    now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-    draw.text((0, 0), 'Time:', fill="black")
-    draw.text((30, 0), now, fill="red")
+    now = time.strftime('%Y-%m-%d  %H:%M', time.localtime(time.time()))
+    draw.text((0, 0), 'Time:', fill="black", font=en_font10)
+    draw.text((30, 0), now, fill="black",font=en_font10)
+
+    draw.text((0, 10),'Greetings:', fill="coral", font=en_font20)
+    draw.text((20, 30),'Ocsphy & ', fill="coral", font=en_font20)
+    draw.text((50, 50),'Ronustine', fill="coral", font=en_font20)
+
+    draw.text((50, 80),'Kitten KillER', fill="red", font=en_font20)
+    draw.text((80, 103),'K.K. - 1.0', fill="red", font=en_font20)
+
     LCD.LCD_ShowImage(image)
-    # time.sleep(1)
+    time.sleep(60)
