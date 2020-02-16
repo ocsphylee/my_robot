@@ -29,7 +29,7 @@ import RPi.GPIO as GPIO
 import time
 
 # Pin definition
-LCD_RST_PIN         = 27
+LCD_RST_PIN         = 23
 LCD_DC_PIN          = 25
 LCD_CS_PIN          = 8
 LCD_BL_PIN          = 24
@@ -55,6 +55,6 @@ def GPIO_Init():
     GPIO.setup(LCD_BL_PIN, GPIO.OUT)
     SPI.max_speed_hz = 60000000
     SPI.mode = 0b00
-    return 0;
+    return 0
 
 ### END OF FILE ###

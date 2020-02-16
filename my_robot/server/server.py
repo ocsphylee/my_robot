@@ -80,11 +80,9 @@ def FPV_thread():
     fpv.capture_thread(addr[0])
 
 def screen_thread():
-    global screen
-    screen = Screen()
     while 1:
         screen.welcome()
-        time.sleep(30)
+        # time.sleep(10)
 
 
 def info_send_client():
@@ -378,9 +376,12 @@ if __name__ == '__main__':
     switch.set_all_switch_off()
 
     # 建立线程，控制屏幕显示
-    screen_threading = threading.Thread(target=screen_thread())
+    screen = Screen()
+    screen_threading = threading.Thread(target=screen_thread)
     screen_threading.setDaemon(True)
     screen_threading.start()
+
+    time.sleep(10)
 
     try:
         # 实例化LED对象，并设置颜色
