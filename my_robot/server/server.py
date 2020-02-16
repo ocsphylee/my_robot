@@ -13,7 +13,7 @@ import os
 import time
 
 from mods_LED import LED
-from func_LCD import LCD
+from func_OLCD import Screen
 from mods_servo import YunTai
 from func_FPV import FPV
 import mods_motor as move
@@ -40,9 +40,7 @@ def wifi_check():
         ipaddr_check = s.getsockname()[0]
         s.close()
         led.color_wipe(0, 255, 0)
-        # screen.clear()
-        # screen.write(0, 0, 'Find Me Here:')
-        # screen.write(1, 1, ipaddr_check)
+        screen.ip = ipaddr_check
         return True
     except:
         # Define a thread for data receiving
@@ -80,6 +78,13 @@ def FPV_thread():
     global fpv
     fpv = FPV()
     fpv.capture_thread(addr[0])
+
+def screen_thread():
+    global screen
+    screen = Screen()
+    while 1:
+        screen.welcome()
+        time.sleep(30)
 
 
 def info_send_client():
@@ -372,14 +377,10 @@ if __name__ == '__main__':
     switch = Switch()
     switch.set_all_switch_off()
 
-    # 实例化屏幕对象
-    # screen = LCD()
-    # screen.clear()
-    # screen.write(0, 0, 'Greetings!!')
-    # screen.write(4, 1, 'OCSPHY')
-    # time.sleep(3)
-    # screen.clear()
-    # screen.write(0, 0, 'Starting Robot..')
+    # 建立线程，控制屏幕显示
+    screen_threading = threading.Thread(target=screen_thread())
+    screen_threading.setDaemon(True)
+    screen_threading.start()
 
     try:
         # 实例化LED对象，并设置颜色
@@ -396,6 +397,7 @@ if __name__ == '__main__':
     for i in range(5):
         if wifi_check():
             break
+        screen.ip = 'Retrying'
         time.sleep(1)
 
     tcp_cli_sock, addr = build_server(PORT=10223)
