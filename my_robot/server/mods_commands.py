@@ -74,6 +74,10 @@ class Commands(Enum):
     LIP2 = 'lip2'
     ERR = 'err'
 
+    # 屏幕指令
+    WELCOME = 'welcome'
+    PANEL = 'panel'
+
 if __name__ == '__main__':
     yuntai_commands = [Commands.LOOKLEFT.value, Commands.LOOKRIGHT.value,
                        Commands.UP.value, Commands.DOWN.value,

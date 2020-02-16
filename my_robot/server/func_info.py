@@ -27,7 +27,9 @@ def get_cpu_tempfunc():
 def get_gpu_tempfunc():
     """ Return GPU temperature as a character string"""
     res = os.popen('/opt/vc/bin/vcgencmd measure_temp').readline()
-    return res.replace("temp=", "")
+    res = res.replace("temp=", "")
+    res = res.replace("\'C", "")
+    return res
 
 
 def get_cpu_use():
@@ -47,4 +49,6 @@ def get_swap_info():
     swap_cent = psutil.swap_memory()[3]
     return str(swap_cent)
 
+if __name__ == '__main__':
+    print((get_gpu_tempfunc()))
 

@@ -40,6 +40,8 @@ def wifi_check():
         ipaddr_check = s.getsockname()[0]
         s.close()
         led.color_wipe(0, 255, 0)
+        # 屏幕切换
+        screen.staus = Commands.WELCOME.value
         screen.ip = ipaddr_check
         return True
     except:
@@ -67,7 +69,7 @@ def build_server(PORT=10223):
     print('waiting for connection...')
     tcp_cli_sock, addr = tcp_ser_sock.accept()
     print('...connected from :', addr)
-
+    screen.staus = Commands.PANEL.value
     # screen.clear()
     # screen.write(0, 0, 'connected from :')
     # screen.write(1, 1, addr[0])
@@ -79,10 +81,11 @@ def FPV_thread():
     fpv = FPV()
     fpv.capture_thread(addr[0])
 
+
 def screen_thread():
     while 1:
-        screen.welcome()
-        # time.sleep(10)
+        screen.run()
+        time.sleep(5)
 
 
 def info_send_client():
