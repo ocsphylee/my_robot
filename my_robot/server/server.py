@@ -118,7 +118,8 @@ class ContinousDetect(threading.Thread):
         self.yuntai_commands = [Commands.LOOKLEFT.value, Commands.LOOKRIGHT.value,
                                 Commands.UP.value, Commands.DOWN.value,
                                 Commands.LOOKUP.value, Commands.LOOKDOWN.value,
-                                Commands.GRAB.value, Commands.LOOSE.value]
+                                Commands.GRAB.value, Commands.LOOSE.value,
+                                Commands.ARMUP.value, Commands.ARMDOWN.value]
 
     def run(self):
         global current_command, servo_command, motor_speed

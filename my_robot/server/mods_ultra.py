@@ -10,8 +10,8 @@ Descriptions: 超声测距
 import RPi.GPIO as GPIO
 import time
 
-Tr = 11
-Ec = 8
+Tr = 0
+Ec = 1
 
 # TODO: 通过MPU6050进行三角测距，提高准确度
 

@@ -439,6 +439,18 @@ def servo_buttons(x,y):
 		tcpClicSock.send(('home').encode())
 		time.sleep(0.15)
 
+	def call_arm_up(event):
+		global servo_stu
+		if servo_stu == 0:
+			tcpClicSock.send(('armup').encode())
+			servo_stu = 1
+
+	def call_arm_down(event):
+		global servo_stu
+		if servo_stu == 0:
+			tcpClicSock.send(('armdown').encode())
+			servo_stu = 1
+
 	Btn_0 = tk.Button(root, width=8, text='Left',fg=color_text,bg=color_btn,relief='ridge')
 	Btn_0.place(x=x,y=y+35)
 	Btn_0.bind('<ButtonPress-1>', call_lookleft)
@@ -497,6 +509,19 @@ def servo_buttons(x,y):
 
 	root.bind('<KeyPress-h>', call_home)
 
+	Btn_7 = tk.Button(root, width=8, text='Arm_Down', fg=color_text, bg=color_btn, relief='ridge')
+	Btn_7.place(x=x, y=y - 55 - 35-35)
+	Btn_7.bind('<ButtonPress-1>', call_arm_down)
+	Btn_7.bind('<ButtonRelease-1>', call_stop)
+	root.bind('<KeyPress-m>', call_arm_down)
+	root.bind('<KeyRelease-m>', call_stop)
+
+	Btn_8 = tk.Button(root, width=8, text='Arm_Up', fg=color_text, bg=color_btn, relief='ridge')
+	Btn_8.place(x=x, y=y - 55 - 35 - 35 - 35)
+	Btn_8.bind('<ButtonPress-1>', call_arm_up)
+	Btn_8.bind('<ButtonRelease-1>', call_stop)
+	root.bind('<KeyPress-n>', call_arm_up)
+	root.bind('<KeyRelease-n>', call_stop)
 
 def motor_buttons(x,y):
 	'''
@@ -875,13 +900,14 @@ def loop():
 	var_err = tk.StringVar()
 	var_err.set(20)
 
-	# 插入图片
-	try:
-		logo =tk.PhotoImage(file = 'logo.png')
-		l_logo=tk.Label(root,image = logo,bg=color_bg)
-		l_logo.place(x=30,y=13)
-	except:
-		pass
+	#
+	# # 插入图片
+	# try:
+	# 	logo =tk.PhotoImage(file = 'logo.png')
+	# 	l_logo=tk.Label(root,image = logo,bg=color_bg)
+	# 	l_logo.place(x=30,y=13)
+	# except:
+	# 	pass
 
 	# 电机按钮
 	motor_buttons(30,105)
@@ -890,7 +916,7 @@ def loop():
 	information_screen(330,15)
 
 	# IP输入框和Connect按钮
-	connent_input(125,15)
+	connent_input(30,15)
 
 	# Port1,2,3按钮
 	switch_button(30,195)

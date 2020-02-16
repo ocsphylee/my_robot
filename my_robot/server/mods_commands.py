@@ -27,6 +27,9 @@ class Commands(Enum):
     LOOSE = 'loose'  # 3号舵机，放开（摇臂）
     STOP = 'stop'
     HOME = 'home'
+    ARMUP = 'armup'
+    ARMDOWN = 'armdown'
+
 
     # 电机指令控制
     FORWARD = 'forward'
