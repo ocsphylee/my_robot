@@ -7,38 +7,31 @@ Date:2020/2/16 21:06
 Descriptions:
 '''
 
-import sys
-import os
-picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
-libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
-if os.path.exists(libdir):
-    sys.path.append(libdir)
 
+import mods_LCD_1in8
+import mods_LCD_Config
 import time
-from waveshare_1in8_LCD import LCD_1in8
-from waveshare_1in8_LCD import LCD_Config
-
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 from PIL import ImageColor
 
 
-LCD = LCD_1in8.LCD()
+LCD = mods_LCD_1in8.LCD()
 
-Lcd_ScanDir = LCD_1in8.SCAN_DIR_DFT  #SCAN_DIR_DFT = D2U_L2R
+Lcd_ScanDir = mods_LCD_1in8.SCAN_DIR_DFT  #SCAN_DIR_DFT = D2U_L2R
 LCD.LCD_Init(Lcd_ScanDir)
 LCD.LCD_Clear(0xffff)
 
 
-cn_font18 = ImageFont.truetype(picdir+'/Font.ttc', 10)
+cn_font18 = ImageFont.truetype('./pic/Font.ttc', 10)
 
 en_font20 = ImageFont.truetype('/usr/share/fonts/truetype/lato/Lato-BoldItalic.ttf', size=20)
 
 en_font10 = ImageFont.truetype('/usr/share/fonts/truetype/lato/Lato-BoldItalic.ttf', size=10)
 
 while 1:
-    image = Image.open(picdir+'/welcome.bmp')
+    image = Image.open('./pic/welcome.bmp')
     draw = ImageDraw.Draw(image)
     now = time.strftime('%Y-%m-%d  %H:%M', time.localtime(time.time()))
     draw.text((0, 0), 'Time:', fill="black", font=en_font10)
