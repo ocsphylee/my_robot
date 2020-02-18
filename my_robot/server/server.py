@@ -384,7 +384,7 @@ if __name__ == '__main__':
     screen_threading.setDaemon(True)
     screen_threading.start()
 
-    time.sleep(10)
+    time.sleep(2)
 
     try:
         # 实例化LED对象，并设置颜色
@@ -401,8 +401,8 @@ if __name__ == '__main__':
     for i in range(5):
         if wifi_check():
             break
-        screen.ip = 'Retrying'
-        time.sleep(1)
+        # screen.ip = 'Retrying'
+        # time.sleep(1)
 
     tcp_cli_sock, addr = build_server(PORT=10223)
 
