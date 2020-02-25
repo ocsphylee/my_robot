@@ -51,5 +51,5 @@ class Switch:
 if __name__ == '__main__':
     swtich = Switch()
     swtich.set_all_switch_on()
-    time.sleep(2)
+    time.sleep(60)
     swtich.set_all_switch_off()
